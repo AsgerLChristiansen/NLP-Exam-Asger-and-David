@@ -26,17 +26,18 @@ import random
 # - Labels and dependent variable.
 # - The already-loaded model, I assume?
 
-def train_model(model:transformer, train_dataloader:dataloader, val_data, optimizer, epochs = False, model_name = "trained_model_nruns_"):
+def train_model(model, train_dataloader, val_dataloader, optimizer, epochs = False, model_name = "trained_model_nruns_"):
 
     nosave = 0
     #if epochs:
     print("[INFO:] Training classifier...")
     nruns = 0
     #if epochs: # If limited epochs is defined.
-    while true:
+    while True:
         nruns += 1
         if epochs:
             if nruns > epochs:
+                print("Max epochs reached!")
                 break
         k = 0
         for batch in train_dataloader:
@@ -54,7 +55,8 @@ def train_model(model:transformer, train_dataloader:dataloader, val_data, optimi
             optimizer.step()
             optimizer.zero_grad()
         # Validate model post epoch
-        val_y = model(val_data**)
+        for val_data in val_dataloader: # Roundabout way of loading validation data. Unsure how else to feed it to the model.
+            val_y = model(**val_data)
         # Calculate validation loss
         val_loss = val_y.loss
         # If best_val_loss exists, see if it needs updating.
@@ -62,7 +64,7 @@ def train_model(model:transformer, train_dataloader:dataloader, val_data, optimi
             if best_val_loss > val_loss:
                 best_val_loss = val_loss
                # save the model if it is the best so far
-                torch.save(model, f"models/{model_name}{nruns}")
+                torch.save(model, f"models/{model_name}.pt")
                 nosave = 0
             else:
                 # Increment nosave
@@ -77,5 +79,5 @@ def train_model(model:transformer, train_dataloader:dataloader, val_data, optimi
             break
             # some print to see that it is running
         #if (epoch + 1) % 10 == 0: # Comment or uncomment depending on how many epochs you want printed.
-        print(f"epoch: {epoch+1}, loss = {val_loss:.4f}")
+        print(f"epoch: {nruns}, loss = {val_loss:.4f}")
     print("[INFO:] Finished traning!")
