@@ -13,6 +13,37 @@ import random
 
 random.seed(1337)
 
+
+def arg_inputs():
+    """
+    Initialize arguments for main() when called on command line
+
+    """
+    # initialise parser
+    parser = argparse.ArgumentParser(description = "Script to run LSTM for Named Entity Recognition.")
+
+    # add arguments
+    parser.add_argument("-old_name",
+                        "--old_model_name", 
+                        type = str,
+                        required = False,
+                        help = "the name of an existing saved model from models/ to be trained on another epoch. Leave blank if training a model for the first time.")
+    parser.add_argument("-new_name", 
+                        "--new_model_name", 
+                        type = str,
+                        required = True,
+                        help = "the name to be used when saving the model again after training.")
+    parser.add_argument("-data",
+                        "--dataset",
+                        type = str,
+                        required = True,
+                        help = "the dataset from preprocessed/ to be trained on.")
+    # list of arguments given
+    args = parser.parse_args()
+
+    # return list of arguments
+    return args
+
 # Load datasets from huggingface
 def load_data():
     tifu_short_raw = load_dataset("reddit_tifu", "short", split="train")
@@ -59,9 +90,9 @@ def train_val_test(dataset, filename):
     dict2 = train_and_val.train_test_split(test_size=0.2)
     train = dict2["train"]
     val = dict2["test"]
-    train.save_to_disk("preprocessed/" + f'{filename}' + '_train.pt')
-    val.save_to_disk("preprocessed/"+ f'{filename}' + '_val.pt'))
-    test.save_to_disk("preprocessed/"+ f'{filename}' + '_test.pt'))
+    train.save_to_disk("src/preprocessed/" + f'{filename}' + '_train.pt')
+    val.save_to_disk("src/preprocessed/"+ f'{filename}' + '_val.pt')
+    test.save_to_disk("src/preprocessed/"+ f'{filename}' + '_test.pt')
     return train, val, test
 
 
@@ -73,8 +104,8 @@ def preprocess(dataset, tokenization_func, filename):
     train, val, test = train_val_test(dataset, filename)
     return None
 
-#if __name__ == "__main__":
-short, long = load_data()
-preprocess(short, tokenization_title, "title")
-preprocess(short, tokenization_docs, "docs")
-preprocess(short, tokenization_tldr, "tldr")
+if __name__ == "__main__":
+    short, long = load_data()
+    preprocess(short, tokenization_title, "title")
+    preprocess(short, tokenization_docs, "docs")
+    preprocess(short, tokenization_tldr, "tldr")
