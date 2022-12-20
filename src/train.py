@@ -30,6 +30,7 @@ def train_model(model, train_dataloader, optimizer, model_name = "trained_model_
         optimizer.step()
         optimizer.zero_grad()
         # Validate model post epoch
+    torch.save(model, f"models/{model_name}" + '.pt')
     # Otherwise, create it and save the model.
     # some print to see that it is running
     print("[INFO:] Finished traning! Loss =" f"{loss:.4f}")

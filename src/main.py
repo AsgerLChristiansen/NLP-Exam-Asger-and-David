@@ -33,11 +33,11 @@ from datasets import load_from_disk
 
 
 # # Your preprocessed train, val and test sets.
-# train_cl_long = load_from_disk("preprocessed/train_long")
+train_cl_long = load_from_disk("preprocessed/train_long")
 # val_cl_long = load_from_disk("preprocessed/val_long")
 # test_cl_long = load_from_disk("preprocessed/test_long")
 
-train_cl_long = load_from_disk("preprocessed/gen_tldr_train")
+#train_cl_long = load_from_disk("preprocessed/gen_tldr_train")
 from torch.utils.data import DataLoader
 
 # The way we feed data to the model is using the dataloader class. It expects a very, very specific sort of input that looks like this:
@@ -69,7 +69,7 @@ optimizer = AdamW(model.parameters(), lr=5e-5)
 # In practice, however, these models take so long that I doubt we will ever get to the minimum,
 # so specifying a number for epochs is probably a good idea.
 #epochs = 1
-model_name = "tldr_model"  # Replace with whatever else you want. The train function ensures that it is a .pt model.
+model_name = "actual_tldr_model_epoch_1"  # Replace with whatever else you want. The train function ensures that it is a .pt model.
 
 i = 0
 while True:
