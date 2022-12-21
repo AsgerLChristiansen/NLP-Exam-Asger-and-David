@@ -90,9 +90,9 @@ def train_val_test(dataset, filename):
     dict2 = train_and_val.train_test_split(test_size=0.2)
     train = dict2["train"]
     val = dict2["test"]
-    train.save_to_disk("src/preprocessed/" + f'{filename}' + '_train.pt')
-    val.save_to_disk("src/preprocessed/"+ f'{filename}' + '_val.pt')
-    test.save_to_disk("src/preprocessed/"+ f'{filename}' + '_test.pt')
+    train.save_to_disk("src/preprocessed/" + f'{filename}' + '_train')
+    val.save_to_disk("src/preprocessed/"+ f'{filename}' + '_val')
+    test.save_to_disk("src/preprocessed/"+ f'{filename}' + '_test')
     return train, val, test
 
 
