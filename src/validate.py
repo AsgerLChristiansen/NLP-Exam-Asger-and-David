@@ -20,42 +20,35 @@ from datasets import load_from_disk
 
 # Load your data here.
 
-val_cl_long = load_from_disk("preprocessed/gen_tldr_val")
+val_data= load_from_disk("preprocessed/tldr_val.pt")
 
 # Load a model to be validated.
-model = torch.load("models/tldr_model.pt")
+model = torch.load("models/actual_tldr_model_epoch_1.pt")
 
 from torch.utils.data import DataLoader
 
-# The way we feed data to the model is using the dataloader class. 
-val_cl_long = val_cl_long.remove_columns(['ups', 'num_comments', 'upvote_ratio', 'score', 'documents', 'tldr', 'title'])
-val_cl_long.set_format(type="torch", columns=["input_ids", "token_type_ids", "attention_mask", "labels"])
-len_val = len(val_cl_long["input_ids"])
+def validate(val_data):
+    output = model(input_ids = val_data["input_ids"], attention_mask = val_data["attention_mask"], labels = val_data["labels"])
+    loss = output.loss
+    print(loss.item())
+    return loss.item()
 
+len_val = len(val_data)
+
+#len_val = 1000
 val_loss = []
 i = 0
-#len_val = 600
 while True:
-    if i + 320 < len_val:
-        small_val = val_cl_long.select(range(i, i + 320))
-        val_dataloader = torch.utils.data.DataLoader(small_val, batch_size = 32)
-        print("bla")
-        for val_data in val_dataloader: # Roundabout way of loading validation data. Unsure how else to feed it to the model.
-            val_y = model(**val_data)
-        # Calculate validation loss
-            val_loss.append(val_y.loss)
-        print("blabla")
-        print(val_y.loss)
+    if i + 100 < len_val:
+        small_val = val_data.select(range(i, i +100))
+        loss= validate(small_val)
+        val_loss.append(loss)
     else:
-        small_val = val_cl_long.select(range(i, len_val))
-        val_dataloader = torch.utils.data.DataLoader(small_val, batch_size = 32)
-        for val_data in val_dataloader: # Roundabout way of loading validation data. Unsure how else to feed it to the model.
-            val_y = model(**val_data)
-            # Calculate validation loss
-            val_loss.append(val_y.loss)
+        small_val = val_data.select(range(i, len_val))
+        validate(small_val)
+        loss = validate(small_val)
+        val_loss.append(loss)
         break
-    i += 320
+    i += 100
 
-val_loss = val_loss.detach().numpy()
-
-print("Validation loss = ", np.mean(val_loss))
+print("Mean validation loss: ", np.mean(val_loss))
