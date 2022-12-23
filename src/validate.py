@@ -3,6 +3,9 @@
 from datasets import load_dataset
 from transformers import AutoTokenizer
 
+#Import model and optimizer
+from transformers import AutoModelForSequenceClassification
+
 from itertools import islice
 from typing import Iterable, List, Tuple
 import argparse
@@ -20,12 +23,14 @@ from datasets import load_from_disk
 
 # Load your data here.
 
-val_data= load_from_disk("preprocessed/tldr_val.pt")
+val_data= load_from_disk("preprocessed/tldr_val")
 
 # Load a model to be validated.
-model = torch.load("models/actual_tldr_model_epoch_1.pt")
+model = torch.load("models/3_tldr_epoch_1.pt")
 
-from torch.utils.data import DataLoader
+# bert_model = "bert-base-uncased"
+# model = AutoModelForSequenceClassification.from_pretrained(bert_model, num_labels=11)
+#from torch.utils.data import DataLoader
 
 def validate(val_data):
     output = model(input_ids = val_data["input_ids"], attention_mask = val_data["attention_mask"], labels = val_data["labels"])

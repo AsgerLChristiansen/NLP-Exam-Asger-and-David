@@ -41,6 +41,7 @@ def main(old_model_name:str = None, new_model_name:str = "My model", dataset:str
     # Training loop (Batch size of 32. Data is subsetted into chunks of 320 to avoid crashing issues)   
     # Runs only one epoch due to technical limitations. LEss likely to crash this way.
     i = 0
+    j = 0
     while True:
         if i + 320 < len_train:
             small_train = train.select(range(i, i +320))
@@ -52,6 +53,9 @@ def main(old_model_name:str = None, new_model_name:str = "My model", dataset:str
             train_model(model, train_dataloader, optimizer, new_model_name)
             break
         i += 320
+        j += 1
+        if j % 10 == 0:
+            print("100 batches processed!")
 
 # Command line functionality
 if __name__ == "__main__":

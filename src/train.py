@@ -17,7 +17,6 @@ import random
 
 ## - Model training script
 def train_model(model, train_dataloader, optimizer, model_name = "trained_model_"):
-    print("[INFO:] Training classifier...")
     for batch in train_dataloader:
         ## train on one batch
         # FORWARD PASS
@@ -33,4 +32,3 @@ def train_model(model, train_dataloader, optimizer, model_name = "trained_model_
     torch.save(model, f"src/models/{model_name}")
     # Otherwise, create it and save the model.
     # some print to see that it is running
-    print("[INFO:] Finished traning! Loss =" f"{loss:.4f}")

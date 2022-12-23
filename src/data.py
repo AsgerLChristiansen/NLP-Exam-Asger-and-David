@@ -57,6 +57,15 @@ def add_columns(example):
     example["labels"] = int(example["upvote_ratio"] * 10)
     return example
 
+def reconfigure_labels(example):
+    if example["labels"] in [0,1,2,3,4,5,6]:
+        example["labels"] = 0
+    elif example["labels"] in [7,8]:
+        example["labels"] = 1
+    else:
+        example["labels"] = 2
+    return example
+
 # Remove new lines (Not really necessary in titles or tldr)
 def remove_new_lines(example):
     text = example["documents"]
@@ -98,6 +107,7 @@ def train_val_test(dataset, filename):
 
 def preprocess(dataset, tokenization_func, filename):
     dataset = dataset.map(add_columns)
+    dataset = dataset.map(reconfigure_labels)
     dataset = dataset.map(remove_new_lines)
     dataset = dataset.map(tokenization_func, batched = True)
     dataset = clean_columns(dataset)
