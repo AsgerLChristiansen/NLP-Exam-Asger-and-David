@@ -1,18 +1,15 @@
-# Run the setup script first! Migrate to the correct folder and type bash setup.sh in the terminal.
-
 # Import loads of stuff (I don't think I even use half of these.)
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 from transformers import AutoTokenizer
 import argparse
 import numpy as np
 import torch
 import datasets
-from datasets.dataset_dict import DatasetDict
+from datasets import load_from_disk
 from torch import nn
 import random
 
 random.seed(1337)
-
 
 def arg_inputs():
     """
@@ -33,11 +30,21 @@ def arg_inputs():
                         type = str,
                         required = True,
                         help = "the name to be used when saving the model again after training.")
-    parser.add_argument("-data",
-                        "--dataset",
+    parser.add_argument("-train",
+                        "--train_data",
                         type = str,
                         required = True,
                         help = "the dataset from preprocessed/ to be trained on.")
+    parser.add_argument("-val",
+                        "--val_data",
+                        type = str,
+                        required = True,
+                        help = "the dataset from preprocessed/ to be validated on.")
+    parser.add_argument("-batch",
+                        "--batch_size",
+                        type = int,
+                        required = False,
+                        help = "batch size to train on. Default 32")
     # list of arguments given
     args = parser.parse_args()
 
@@ -105,9 +112,10 @@ def train_val_test(dataset, filename):
     return train, val, test
 
 
-def preprocess(dataset, tokenization_func, filename):
+def preprocess(dataset, tokenization_func, filename, change_labels = False):
     dataset = dataset.map(add_columns)
-    dataset = dataset.map(reconfigure_labels)
+    if change_labels == True:
+        dataset = dataset.map(reconfigure_labels)
     dataset = dataset.map(remove_new_lines)
     dataset = dataset.map(tokenization_func, batched = True)
     dataset = clean_columns(dataset)
@@ -116,6 +124,22 @@ def preprocess(dataset, tokenization_func, filename):
 
 if __name__ == "__main__":
     short, long = load_data()
-    preprocess(short, tokenization_title, "title")
-    preprocess(short, tokenization_docs, "docs")
-    preprocess(short, tokenization_tldr, "tldr")
+    preprocess(short, tokenization_title, "title_11")
+    preprocess(short, tokenization_docs, "docs_11")
+    preprocess(short, tokenization_tldr, "tldr_11")
+    preprocess(short, tokenization_title, "title_3", change_labels = True)
+    preprocess(short, tokenization_docs, "docs_3", change_labels = True)
+    preprocess(short, tokenization_tldr, "tldr_3", change_labels = True)
+    try:
+        one = load_from_disk("src/gen_tldr_temp/gen_tldr_1")
+        two = load_from_disk("src/gen_tldr_temp/gen_tldr_2")
+        three = load_from_disk("src/gen_tldr_temp/gen_tldr_3")
+        # Make concatenated dataset
+        gen_tldr = concatenate_datasets([one,two, three])
+        # Tokenization
+        tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
+        preprocess(gen_tldr, tokenization_tldr, "gen_tldr_11")
+        preprocess(gen_tldr, tokenization_tldr, "gen_tldr_3", change_labels = True)
+    except FileNotFoundError:
+        print("[NOTICE]")
+        print("It seems there are no generated tldr's to preprocess. If you have the time and computational resources, consider running gen_tldr.sh from the terminal.")

@@ -13,7 +13,6 @@ import numpy as np
 import torch
 import datasets
 from datasets.dataset_dict import DatasetDict
-from gensim.models.keyedvectors import KeyedVectors
 from torch import nn
 import random
 
@@ -29,9 +28,9 @@ from datasets import load_from_disk
 
 # Load your data here.
 
-test_data= load_from_disk("preprocessed/tldr_test.pt")
+test_data= load_from_disk("preprocessed/gen_tldr_test_11")
 
-model_name = "actual_tldr_model_epoch_1.pt"
+model_name = "11_gen_tldr_epoch_1.pt"
 
 # Load a model to be validated.
 model = torch.load("models/" + model_name)
