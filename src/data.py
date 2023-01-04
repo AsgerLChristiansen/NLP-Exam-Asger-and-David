@@ -28,23 +28,29 @@ def arg_inputs():
     parser.add_argument("-new_name", 
                         "--new_model_name", 
                         type = str,
-                        required = True,
+                        required = False,
                         help = "the name to be used when saving the model again after training.")
     parser.add_argument("-train",
                         "--train_data",
                         type = str,
-                        required = True,
+                        required = False,
                         help = "the dataset from preprocessed/ to be trained on.")
     parser.add_argument("-val",
                         "--val_data",
                         type = str,
-                        required = True,
+                        required = False,
                         help = "the dataset from preprocessed/ to be validated on.")
     parser.add_argument("-batch",
                         "--batch_size",
                         type = int,
                         required = False,
                         help = "batch size to train on. Default 32")
+    parser.add_argument("-test",
+                        "--test_data",
+                        type = str,
+                        required = False,
+                        help = "test data to test old models with.")
+    
     # list of arguments given
     args = parser.parse_args()
 

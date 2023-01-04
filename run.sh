@@ -2,5 +2,5 @@
 pip install --upgrade pip
 pip install -r requirements.txt
 
-# 
-python3 -m src.main --new_model_name "blabla.pt"  --train_data "tldr_3_train" --val_data "tldr_3_val" --batch_size 64
+# Run for a single epoch and validate
+python3 -m src.main --new_model_name "new_model_name.pt"  --train_data "training_set" --val_data "validation_set" --batch_size 64
