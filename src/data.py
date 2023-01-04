@@ -1,4 +1,4 @@
-# Import loads of stuff (I don't think I even use half of these.)
+# Imports
 from datasets import load_dataset, concatenate_datasets
 from transformers import AutoTokenizer
 import argparse
@@ -88,7 +88,6 @@ def remove_new_lines(example):
 # Tokenization
 tokenizer = AutoTokenizer.from_pretrained('bert-base-uncased')
 
-## LOOK HERE! If you want to train on full text, run as it is. If you want to train on titles, change 'documents' to 'title'.
 def tokenization_tldr(example):
     return tokenizer(example["tldr"], padding  = 'max_length', truncation= True, return_tensors = "pt")
 
@@ -98,7 +97,7 @@ def tokenization_docs(example):
 def tokenization_title(example):
     return tokenizer(example["title"], padding  = 'max_length', truncation= True, return_tensors = "pt")
 
-
+## Set the right format
 def clean_columns(dataset):
     dataset = dataset.remove_columns(['ups', 'num_comments', 'upvote_ratio', 'score', 'documents', 'tldr', 'title'])
     dataset.set_format(type="torch", columns=["input_ids", "token_type_ids", "attention_mask", "labels"])
@@ -117,7 +116,7 @@ def train_val_test(dataset, filename):
     test.save_to_disk("src/preprocessed/"+ f'{filename}' + '_test')
     return train, val, test
 
-
+# Preprocess by utilizing functions above
 def preprocess(dataset, tokenization_func, filename, change_labels = False):
     dataset = dataset.map(add_columns)
     if change_labels == True:
@@ -128,6 +127,7 @@ def preprocess(dataset, tokenization_func, filename, change_labels = False):
     train, val, test = train_val_test(dataset, filename)
     return None
 
+# Command line functionality
 if __name__ == "__main__":
     short, long = load_data()
     preprocess(short, tokenization_title, "title_11")

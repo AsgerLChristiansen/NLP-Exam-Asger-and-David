@@ -1,17 +1,12 @@
-# Imports (Double-check what's necessary here)
+# Imports 
 from datasets import load_dataset
+from datasets import load_from_disk
 from transformers import AutoTokenizer
-
-#Import model and optimizer
 from transformers import AutoModelForSequenceClassification
-
-from itertools import islice
-from typing import Iterable, List, Tuple
 import argparse
 import numpy as np
 import torch
 import datasets
-from datasets.dataset_dict import DatasetDict
 from torch import nn
 import random
 from src.data import arg_inputs
@@ -19,18 +14,15 @@ from src.data import arg_inputs
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import classification_report
 from sklearn.metrics import f1_score
-
+# seed
 random.seed(1337)
-
-# Import training script (and allow for changes to it)
-from datasets import load_from_disk
 
 # Load your data here.
 def test_all(old_model_name, filename):
     test_data = load_from_disk("src/preprocessed/" + filename)
     print(type(test_data))
     num_labels = [int(i) for i in filename.split('_') if i.isdigit()][0]
-    # Load a model to be validated.
+    # Load a model to be tested.
     model = torch.load("src/models/" + old_model_name)
     def test(model, test_data):
         output = model(input_ids = test_data["input_ids"], attention_mask = test_data["attention_mask"], labels = test_data["labels"])
@@ -40,6 +32,8 @@ def test_all(old_model_name, filename):
     len_test = len(test_data)
     i = 0
     guesses = []
+    # For script testing purposes, uncomment the following line:
+    # len_test = 101
     while True:
         if i + 100 < len_test:
             small_test = test_data.select(range(i, i +100))

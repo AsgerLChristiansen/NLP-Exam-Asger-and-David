@@ -1,4 +1,4 @@
-# Import loads of stuff (I don't think I even use half of these.)
+# Imports
 from datasets import load_dataset, concatenate_datasets
 from transformers import AutoTokenizer
 import argparse
@@ -9,18 +9,13 @@ from datasets import load_from_disk
 from torch import nn
 import random
 
-
 # Filter dataset_short for rows without a tldr
 tifu_short = load_dataset("reddit_tifu", "short", split="train")
 tifu_no_tldr = tifu_short.filter(lambda example: example["tldr"] == "")
 
 # Create smaller chunks of the no_tldr dataset
-
 small_no_tldr_1 = tifu_no_tldr.select(list(range(10000)))
-
-
 small_no_tldr_1 = tifu_no_tldr.select(list(range(10)))
-
 small_no_tldr_2 = tifu_no_tldr.select(list(range(10000, 20000)))
 small_no_tldr_3 = tifu_no_tldr.select(list(range(20000, len(tifu_no_tldr))))
 

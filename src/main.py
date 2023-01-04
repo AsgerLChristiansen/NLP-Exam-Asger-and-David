@@ -1,4 +1,4 @@
-# Run the setup script first!
+# Imports
 from datasets import load_dataset
 from transformers import AutoTokenizer
 import argparse
@@ -23,8 +23,16 @@ from datasets import load_from_disk
 
 from torch.utils.data import DataLoader
 
-def main(old_model_name:str = None, new_model_name:str = "My model.pt", train_data:str = "docs_3_train", val_data = "docs_3_val", batch_size = 32):
-    
+def main(old_model_name:str = None, new_model_name:str = "My model.pt", train_data:str = "docs_3_train", val_data = "docs_3_val", batch_size = 64):
+    """_summary_
+
+    Args:
+        old_model_name (str): Name of model to be loaded. Remember .pt extension. Use only if training an existing model.
+        new_model_name (str): Name that model should be saved under. Recommend including epoch number in here!
+        train_data (str): name of folder w/ training data from src/preprocessed
+        val_data (str): name of folder w/ validation data from src/preprocessed
+        batch_size (int): Batch size. Defaults to 64. Should ideally be something that can divide 320.
+    """
     num_labels = [int(i) for i in train_data.split('_') if i.isdigit()][0]
     train = load_from_disk("src/preprocessed/" + train_data)
     val = load_from_disk("src/preprocessed/" + val_data)
@@ -40,10 +48,10 @@ def main(old_model_name:str = None, new_model_name:str = "My model.pt", train_da
     optimizer = AdamW(model.parameters(), lr=5e-5)
     # Training loop (Batch size of 32. Data is subsetted into chunks of 320 to avoid crashing issues)   
     # Runs only one epoch due to technical limitations. LEss likely to crash this way.
-    #len_train = 321
     i = 0
     j = 0
-    print("Starting training...")
+    print("Starting training...")    # For script testing purposes, uncomment the following line:
+    # len_train = 321
     while True:
         if i + 320 < len_train:
             small_train = train.select(range(i, i +320))
@@ -61,8 +69,8 @@ def main(old_model_name:str = None, new_model_name:str = "My model.pt", train_da
             print("100 batches processed!")
     print("Training finished, validating in subsets of 100 examples (To avoid crashing)...")
     
-    
-    #len_val = 101
+    # For script testing purposes, uncomment the following line:
+    # len_val = 101
     val_loss = []
     i = 0
     while True:
